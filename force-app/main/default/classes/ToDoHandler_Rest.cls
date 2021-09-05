@@ -29,12 +29,10 @@ global with sharing class ToDoHandler_Rest {
     @HttpDelete
     global static List<ToDo__c> deleteToDos(){
         RestRequest req = RestContext.request;
+        List<Id> ids = 
+        (List<Id>)JSON.deserialize(req.requestBody.toString(), List<Id>.class);
         List<ToDo__c> todos = 
-        (List<ToDo__c>)JSON.deserialize(req.requestBody.toString(), List<ToDo__c>.class);
-        for(ToDo__c todo : todos){
-            todo.Id = todo.Connected_Org_Record_Id__c;
-            todo.Connected_Org_Record_Id__c = null;
-        }
+        [SELECT Id FROM ToDo__c WHERE Connected_Org_Record_Id__c IN : ids];
         delete todos;
         return todos;
     }
